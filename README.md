@@ -1,71 +1,171 @@
 # Customer Churn Prediction
 
+Projeto de Ciência de Dados e Machine Learning para previsão de cancelamento de clientes no setor de telecomunicações.
+
 ## 1. Visão geral
 
-Projeto de Ciência de Dados voltado à identificação de clientes com maior probabilidade de cancelar seus serviços de telecomunicações nos próximos 30 dias.
+Este projeto simula um ambiente corporativo da empresa fictícia **Conecta Brasil Telecom**, com o objetivo de identificar clientes com maior probabilidade de cancelar seus serviços nos próximos 30 dias.
 
-O projeto será desenvolvido com dados sintéticos, simulando um ambiente corporativo, para demonstrar as etapas de um trabalho profissional de análise de dados e Machine Learning.
+O projeto foi desenvolvido para fins educacionais e composição de portfólio profissional, utilizando dados sintéticos.
 
-## 2. Empresa simulada
+## 2. Problema de negócio
 
-**Conecta Brasil Telecom**
+O cancelamento de clientes (*customer churn*) representa um desafio para empresas de telecomunicações.
 
-Empresa fictícia utilizada exclusivamente para fins educacionais e de desenvolvimento de portfólio.
+A identificação antecipada de clientes com maior risco pode apoiar a priorização de ações de retenção e a alocação de recursos comerciais.
 
-## 3. Problema de negócio
+O modelo fornece estimativas probabilísticas e não substitui a avaliação das equipes responsáveis.
 
-A empresa precisa identificar antecipadamente os clientes com maior risco de cancelamento para priorizar ações de retenção e utilizar seus recursos de maneira eficiente.
+## 3. Objetivo analítico
 
-O modelo será desenvolvido para apoiar decisões comerciais, e não para substituir a avaliação das equipes responsáveis pela retenção.
+Estimar a probabilidade de cancelamento efetivo do serviço nos próximos 30 dias, considerando informações disponíveis na data de referência.
 
-## 4. Objetivo analítico
-
-Estimar a probabilidade de cancelamento efetivo de cada cliente dentro dos próximos 30 dias, utilizando somente informações disponíveis na data da previsão.
-
-## 5. Tecnologias previstas
+## 4. Tecnologias utilizadas
 
 * Python
 * Pandas e NumPy
 * Scikit-learn
-* Matplotlib
 * PostgreSQL e SQL
+* Matplotlib e Seaborn
 * Jupyter Notebook
-* Git e GitHub
 * Pytest
+* Joblib
+* Git e GitHub
 
-As bibliotecas serão instaladas conforme forem necessárias nas etapas do projeto.
+## 5. Dados utilizados
 
-## 6. Etapas de desenvolvimento
+Foi gerado um conjunto sintético contendo **1.000 clientes**, com as seguintes variáveis utilizadas no modelo:
 
-1. Definição do problema e dos critérios de negócio.
-2. Preparação do ambiente e geração de dados sintéticos.
-3. Armazenamento, consulta e validação dos dados.
-4. Análise exploratória e preparação das variáveis.
-5. Treinamento e avaliação dos modelos.
-6. Análise de resultados e viabilidade de negócio.
-7. Testes, documentação e publicação no GitHub.
 
-## 7. Critérios de qualidade
+| Variável                           | Descrição                                     |
+| ----------------------------------- | ----------------------------------------------- |
+| `<span>total_atendimentos</span>`   | Quantidade total de atendimentos                |
+| `<span>atendimentos_abertos</span>` | Quantidade de atendimentos ainda abertos        |
+| `<span>media_satisfacao</span>`     | Média de satisfação do cliente               |
+| `<span>cancelou</span>`             | Variável-alvo: 0 = não cancelou; 1 = cancelou |
 
-O projeto buscará garantir:
+A taxa de cancelamento observada no conjunto sintético foi de **13,10%**.
 
-* Separação correta entre treino e teste.
-* Prevenção de vazamento de dados (*data leakage*).
-* Avaliação adequada para classes desbalanceadas.
-* Reprodutibilidade dos experimentos.
-* Documentação clara das decisões técnicas.
-* Consideração de privacidade e proteção de dados.
+Os dados não representam clientes reais.
 
-## 8. Situação atual
+## 6. Metodologia
 
-**Fase:** preparação do ambiente de desenvolvimento.
+O desenvolvimento contemplou:
 
-**Dados:** ainda não gerados.
+1. Definição do problema de negócio e da variável-alvo.
+2. Modelagem e consultas SQL em PostgreSQL.
+3. Geração e validação de dados sintéticos.
+4. Análise exploratória e preparação dos dados.
+5. Separação estratificada entre treino, validação e teste.
+6. Treinamento de um modelo de Regressão Logística.
+7. Seleção de um limiar de classificação (*threshold*) utilizando validação.
+8. Avaliação do modelo.
+9. Interpretação dos coeficientes.
+10. Persistência do modelo com Joblib.
+11. Implementação de previsões com validação de entrada.
+12. Testes automatizados com Pytest.
 
-**Modelo:** ainda não treinado.
+## 7. Resultados do modelo
 
-**Resultados:** ainda não avaliados.
+**Modelo:** Regressão Logística
 
-## 9. Aviso
+**Threshold selecionado:** 0,20
 
-Este é um projeto educacional com dados sintéticos. Os resultados obtidos não representam o desempenho de uma operadora real nem comprovam impacto comercial efetivo.
+Resultados obtidos no conjunto de teste:
+
+
+| Métrica          | Resultado |
+| ----------------- | --------- |
+| Acurácia         | 76,00%    |
+| Precisão         | 28,00%    |
+| Recall            | 53,85%    |
+| F1-score          | 36,84%    |
+| ROC-AUC           | 0,7465    |
+| Average Precision | 0,3567    |
+
+O conjunto de teste utilizado na avaliação final continha 200 registros.
+
+O threshold de 0,20 foi escolhido para melhorar o equilíbrio entre precisão e recall no conjunto de validação, considerando a classe de cancelamento.
+
+Esses resultados são experimentais e não demonstram desempenho em produção.
+
+## 8. Previsões e validação
+
+O projeto contém funcionalidades para:
+
+* Carregar o modelo treinado.
+* Estimar a probabilidade de cancelamento.
+* Classificar clientes utilizando o threshold configurado.
+* Validar os dados recebidos.
+* Rejeitar entradas inconsistentes.
+
+O modelo salvo está localizado em:
+
+`<span>models/modelo_churn_logistico.joblib</span>`
+
+## 9. Como executar
+
+### Pré-requisitos
+
+* Python compatível com as dependências do projeto.
+* Git.
+* Ambiente virtual Python recomendado.
+
+### Instalação
+
+Clone o repositório:
+
+```
+git clone https://github.com/edusousa78/customer-churn-prediction.git
+cd customer-churn-prediction
+```
+
+Crie e ative um ambiente virtual no Windows PowerShell:
+
+```
+python -m venv .venv
+.\.venv\Scripts\Activate.ps1
+```
+
+Instale as dependências:
+
+```
+python -m pip install -r requirements.txt
+```
+
+### Executar os testes
+
+```
+python -m pytest -v
+```
+
+### Executar as previsões de demonstração
+
+```
+python src/prever_churn_validado.py
+```
+
+O script utiliza exemplos fictícios para demonstrar as previsões e a validação de entrada.
+
+## 10. Testes automatizados
+
+Foram implementados testes com Pytest para verificar a validação dos dados e a integração com o modelo.
+
+**Último resultado registrado: 11 testes aprovados.**
+
+## 11. Limitações
+
+* Os dados utilizados são sintéticos.
+* O modelo não foi validado com dados reais de uma operadora.
+* As variáveis foram simuladas e não representam necessariamente a complexidade operacional de uma empresa.
+* A avaliação não comprova retorno financeiro ou eficácia de campanhas de retenção.
+* Durante o desenvolvimento didático, houve experimentação anterior com o conjunto de teste; portanto, as métricas não devem ser interpretadas como uma avaliação independente definitiva.
+* Uma implantação real exigiria validação temporal, monitoramento, avaliação de custos e controles de governança de dados.
+
+## 12. Finalidade
+
+Este repositório integra um portfólio profissional em Ciência de Dados e demonstra competências em Python, SQL, Machine Learning, validação de dados, testes automatizados e versionamento de código.
+
+## 13. Aviso
+
+A Conecta Brasil Telecom é uma empresa fictícia. Este projeto não utiliza dados pessoais reais e não constitui um sistema de decisão comercial validado para produção.
