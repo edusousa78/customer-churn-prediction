@@ -35,7 +35,7 @@ jobs:
       - name: Check dependencies
         run: python -m pip check
 
-      # 5. Verificar qualidade do codigo
+      # 5. Analisar qualidade do codigo
       - name: Run Ruff lint
         run: python -m ruff check api src tests main.py
 
@@ -43,7 +43,7 @@ jobs:
       - name: Run automated tests
         run: python -m pytest -q
 
-      # 7. Construir a imagem Docker
+      # 7. Construir imagem Docker
       - name: Build Docker image
         run: docker build -t conecta-brasil-churn-api:ci .
 
@@ -104,7 +104,7 @@ jobs:
           print("Resposta:", resultado)
           PY
 
-      # 10. Testar rejeicao de dados invalidos
+      # 10. Testar rejeicao de dados inconsistentes
       - name: Test invalid churn prediction input
         run: |
           python - <<'PY'
@@ -131,20 +131,60 @@ jobs:
 
           try:
               with urllib.request.urlopen(requisicao, timeout=10):
-                  raise AssertionError(
-                      "A API aceitou dados invalidos."
-                  )
+                  raise AssertionError("A API aceitou dados invalidos.")
           except urllib.error.HTTPError as erro:
-              assert erro.code == 422, (
-                  f"Esperado HTTP 422, recebido HTTP {erro.code}"
-              )
+              assert erro.code == 422
               resposta = json.load(erro)
               assert "Atendimentos abertos" in resposta["detail"]
 
           print("Teste de entrada invalida aprovado: HTTP 422.")
           PY
 
-      # 11. Remover o container temporario
+      # 11. Testar campo obrigatorio ausente
+      - name: Test missing required field
+        run: |
+          python - <<'PY'
+          import json
+          import urllib.error
+          import urllib.request
+
+          url = "http://127.0.0.1:8000/prever"
+
+          cliente_incompleto = {
+              "total_atendimentos": 4,
+              "atendimentos_abertos": 1,
+          }
+
+          dados = json.dumps(cliente_incompleto).encode("utf-8")
+
+          requisicao = urllib.request.Request(
+              url,
+              data=dados,
+              headers={"Content-Type": "application/json"},
+              method="POST",
+          )
+
+          try:
+              with urllib.request.urlopen(requisicao, timeout=10):
+                  raise AssertionError(
+                      "A API aceitou uma requisicao incompleta."
+                  )
+          except urllib.error.HTTPError as erro:
+              assert erro.code == 422
+              resposta = json.load(erro)
+
+              erros = resposta["detail"]
+
+              assert any(
+                  item["type"] == "missing"
+                  and item["loc"] == ["body", "media_satisfacao"]
+                  for item in erros
+              ), "Campo obrigatorio ausente nao identificado."
+
+          print("Teste de campo obrigatorio aprovado: HTTP 422.")
+          PY
+
+      # 12. Remover container temporario
       - name: Remove Docker test container
         if: always()
         run: docker rm -f churn-api-ci || true
