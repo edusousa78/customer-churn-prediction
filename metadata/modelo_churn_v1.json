@@ -1,0 +1,31 @@
+{
+    "projeto": "Conecta Brasil Telecom - Customer Churn Prediction",
+    "versao_modelo": "1.0.0",
+    "tipo_projeto": "educacional",
+    "algoritmo": "LogisticRegression",
+    "biblioteca": "scikit-learn",
+    "random_state": 42,
+    "threshold": 0.20,
+    "features": [
+        "total_atendimentos",
+        "atendimentos_abertos",
+        "media_satisfacao"
+    ],
+    "dataset": {
+        "arquivo": "data/processed/customer_churn_sintetico.csv",
+        "quantidade_registros": 1000,
+        "sha256": "D1A7F4DF958DAAF35C9CA38CA71CB062525CDD3131BC2F10850E6F41B3BF7F03"
+    },
+    "modelo": {
+        "arquivo": "models/modelo_churn_logistico.joblib",
+        "sha256": "8BCF8E91806A7A1D5F3828E5A9A7A37A8CA4D8B30128AD73387FACC343B6FCBD"
+    },
+    "codigo": {
+        "commit_git": "6888658aef9cc93e88119d28fb3f2217e1866539"
+    },
+    "observacoes": [
+        "Modelo treinado com dados sinteticos.",
+        "Uso exclusivamente educacional.",
+        "Nao validado para decisoes comerciais reais."
+    ]
+}
