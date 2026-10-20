@@ -31,6 +31,8 @@ jobs:
       - name: Check dependencies
         run: python -m pip check
 
+      - name: Run Ruff lint
+        run: python -m ruff check src tests main.py
+
       - name: Run automated tests
         run: python -m pytest -q
-

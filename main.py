@@ -1,10 +1,6 @@
-import pandas as pd
 import numpy as np
+import pandas as pd
 import sklearn
-import matplotlib
-import seaborn as sns
-
-
 
 clientes = pd.DataFrame({
     "cliente_id": [1, 2, 3],

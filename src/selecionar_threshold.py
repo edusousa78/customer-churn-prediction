@@ -1,14 +1,13 @@
 from pathlib import Path
 
 import pandas as pd
-
 from sklearn.linear_model import LogisticRegression
-from sklearn.model_selection import train_test_split
 from sklearn.metrics import (
+    f1_score,
     precision_score,
     recall_score,
-    f1_score,
 )
+from sklearn.model_selection import train_test_split
 
 RAIZ_PROJETO = Path(__file__).resolve().parent.parent
 

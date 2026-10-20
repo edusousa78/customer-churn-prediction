@@ -3,7 +3,6 @@ from pathlib import Path
 
 import pytest
 
-
 RAIZ_PROJETO = Path(__file__).resolve().parent.parent
 PASTA_SRC = RAIZ_PROJETO / "src"
 

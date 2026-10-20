@@ -1,5 +1,6 @@
 import pandas as pd
 
+
 def test_calculo_mensalidade_media():
     # Dados de teste
     mensalidades = pd.Series([100.0, 120.0, 150.0])

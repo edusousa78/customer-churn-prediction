@@ -5,7 +5,6 @@ import pandas as pd
 
 from validar_entrada import validar_cliente
 
-
 RAIZ_PROJETO = Path(__file__).resolve().parent.parent
 
 CAMINHO_MODELO = (
