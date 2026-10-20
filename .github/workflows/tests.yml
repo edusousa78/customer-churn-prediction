@@ -101,7 +101,6 @@ jobs:
           assert resultado["threshold"] == 0.2
 
           print("Teste POST /prever aprovado.")
-          print("Resposta:", resultado)
           PY
 
       # 10. Testar dados inconsistentes
@@ -177,7 +176,7 @@ jobs:
                   item["type"] == "missing"
                   and item["loc"] == ["body", "media_satisfacao"]
                   for item in resposta["detail"]
-              ), "Campo obrigatorio ausente nao identificado."
+              )
 
           print("Teste de campo obrigatorio aprovado: HTTP 422.")
           PY
@@ -213,21 +212,65 @@ jobs:
                       "A API aceitou um tipo de dado invalido."
                   )
           except urllib.error.HTTPError as erro:
-              assert erro.code == 422, (
-                  f"Esperado HTTP 422, recebido HTTP {erro.code}"
-              )
+              assert erro.code == 422
               resposta = json.load(erro)
 
               assert any(
                   item["type"] == "int_type"
                   and item["loc"] == ["body", "total_atendimentos"]
                   for item in resposta["detail"]
-              ), "Erro de tipo nao identificado corretamente."
+              )
 
           print("Teste de tipo invalido aprovado: HTTP 422.")
           PY
 
-      # 13. Remover container temporario
+      # 13. Testar limite numerico de satisfacao
+      - name: Test satisfaction upper limit
+        run: |
+          python - <<'PY'
+          import json
+          import urllib.error
+          import urllib.request
+
+          url = "http://127.0.0.1:8000/prever"
+
+          cliente_limite_invalido = {
+              "total_atendimentos": 3,
+              "atendimentos_abertos": 1,
+              "media_satisfacao": 6.0,
+          }
+
+          dados = json.dumps(cliente_limite_invalido).encode("utf-8")
+
+          requisicao = urllib.request.Request(
+              url,
+              data=dados,
+              headers={"Content-Type": "application/json"},
+              method="POST",
+          )
+
+          try:
+              with urllib.request.urlopen(requisicao, timeout=10):
+                  raise AssertionError(
+                      "A API aceitou satisfacao acima do limite."
+                  )
+          except urllib.error.HTTPError as erro:
+              assert erro.code == 422, (
+                  f"Esperado HTTP 422, recebido HTTP {erro.code}"
+              )
+              resposta = json.load(erro)
+
+              assert any(
+                  item["type"] == "less_than_equal"
+                  and item["loc"] == ["body", "media_satisfacao"]
+                  for item in resposta["detail"]
+              ), "Erro de limite numerico nao identificado."
+
+          print("Teste de limite numerico aprovado: HTTP 422.")
+          PY
+
+      # 14. Remover container temporario
       - name: Remove Docker test container
         if: always()
         run: docker rm -f churn-api-ci || true
+
