@@ -1,5 +1,4 @@
 
-
 name: Python Tests
 
 on:
@@ -15,7 +14,7 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-      # 1. Baixar o codigo do repositorio
+      # 1. Baixar o repositorio
       - name: Checkout repository
         uses: actions/checkout@v4
 
@@ -48,7 +47,7 @@ jobs:
       - name: Build Docker image
         run: docker build -t conecta-brasil-churn-api:ci .
 
-      # 8. Iniciar o container e verificar /health
+      # 8. Iniciar container e verificar /health
       - name: Smoke test Docker container
         run: |
           docker run -d --name churn-api-ci -p 127.0.0.1:8000:8000 conecta-brasil-churn-api:ci
@@ -68,7 +67,7 @@ jobs:
           docker logs churn-api-ci
           exit 1
 
-      # 9. Testar o endpoint de previsao de churn
+      # 9. Testar previsao de churn
       - name: Test churn prediction endpoint
         run: |
           python - <<'PY'
@@ -105,7 +104,47 @@ jobs:
           print("Resposta:", resultado)
           PY
 
-      # 10. Remover o container temporario
+      # 10. Testar rejeicao de dados invalidos
+      - name: Test invalid churn prediction input
+        run: |
+          python - <<'PY'
+          import json
+          import urllib.error
+          import urllib.request
+
+          url = "http://127.0.0.1:8000/prever"
+
+          cliente_invalido = {
+              "total_atendimentos": 2,
+              "atendimentos_abertos": 5,
+              "media_satisfacao": 3.5,
+          }
+
+          dados = json.dumps(cliente_invalido).encode("utf-8")
+
+          requisicao = urllib.request.Request(
+              url,
+              data=dados,
+              headers={"Content-Type": "application/json"},
+              method="POST",
+          )
+
+          try:
+              with urllib.request.urlopen(requisicao, timeout=10):
+                  raise AssertionError(
+                      "A API aceitou dados invalidos."
+                  )
+          except urllib.error.HTTPError as erro:
+              assert erro.code == 422, (
+                  f"Esperado HTTP 422, recebido HTTP {erro.code}"
+              )
+              resposta = json.load(erro)
+              assert "Atendimentos abertos" in resposta["detail"]
+
+          print("Teste de entrada invalida aprovado: HTTP 422.")
+          PY
+
+      # 11. Remover o container temporario
       - name: Remove Docker test container
         if: always()
         run: docker rm -f churn-api-ci || true
