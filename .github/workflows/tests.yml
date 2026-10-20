@@ -1,4 +1,5 @@
 
+
 name: Python Tests
 
 on:
@@ -14,7 +15,7 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-      # 1. Baixar o código do repositório
+      # 1. Baixar o codigo do repositorio
       - name: Checkout repository
         uses: actions/checkout@v4
 
@@ -25,17 +26,17 @@ jobs:
           python-version: '3.13'
           cache: 'pip'
 
-      # 3. Instalar dependências
+      # 3. Instalar dependencias
       - name: Install dependencies
         run: |
           python -m pip install --upgrade pip
           python -m pip install -r requirements.txt
 
-      # 4. Verificar dependências
+      # 4. Verificar dependencias
       - name: Check dependencies
         run: python -m pip check
 
-      # 5. Analisar qualidade do código
+      # 5. Verificar qualidade do codigo
       - name: Run Ruff lint
         run: python -m ruff check api src tests main.py
 
@@ -43,11 +44,11 @@ jobs:
       - name: Run automated tests
         run: python -m pytest -q
 
-      # 7. Construir imagem Docker
+      # 7. Construir a imagem Docker
       - name: Build Docker image
         run: docker build -t conecta-brasil-churn-api:ci .
 
-      # 8. Iniciar container e testar a API
+      # 8. Iniciar o container e verificar /health
       - name: Smoke test Docker container
         run: |
           docker run -d --name churn-api-ci -p 127.0.0.1:8000:8000 conecta-brasil-churn-api:ci
@@ -67,7 +68,44 @@ jobs:
           docker logs churn-api-ci
           exit 1
 
-      # 9. Remover container temporário
+      # 9. Testar o endpoint de previsao de churn
+      - name: Test churn prediction endpoint
+        run: |
+          python - <<'PY'
+          import json
+          import urllib.request
+
+          url = "http://127.0.0.1:8000/prever"
+
+          cliente = {
+              "total_atendimentos": 7,
+              "atendimentos_abertos": 4,
+              "media_satisfacao": 1.5,
+          }
+
+          dados = json.dumps(cliente).encode("utf-8")
+
+          requisicao = urllib.request.Request(
+              url,
+              data=dados,
+              headers={"Content-Type": "application/json"},
+              method="POST",
+          )
+
+          with urllib.request.urlopen(requisicao, timeout=10) as resposta:
+              assert resposta.status == 200
+              resultado = json.load(resposta)
+
+          assert 0 <= resultado["probabilidade_churn"] <= 1
+          assert resultado["classificacao"] == 1
+          assert resultado["alerta"] is True
+          assert resultado["threshold"] == 0.2
+
+          print("Teste POST /prever aprovado.")
+          print("Resposta:", resultado)
+          PY
+
+      # 10. Remover o container temporario
       - name: Remove Docker test container
         if: always()
         run: docker rm -f churn-api-ci || true
