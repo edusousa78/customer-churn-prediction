@@ -104,7 +104,7 @@ jobs:
           print("Resposta:", resultado)
           PY
 
-      # 10. Testar rejeicao de dados inconsistentes
+      # 10. Testar dados inconsistentes
       - name: Test invalid churn prediction input
         run: |
           python - <<'PY'
@@ -173,18 +173,61 @@ jobs:
               assert erro.code == 422
               resposta = json.load(erro)
 
-              erros = resposta["detail"]
-
               assert any(
                   item["type"] == "missing"
                   and item["loc"] == ["body", "media_satisfacao"]
-                  for item in erros
+                  for item in resposta["detail"]
               ), "Campo obrigatorio ausente nao identificado."
 
           print("Teste de campo obrigatorio aprovado: HTTP 422.")
           PY
 
-      # 12. Remover container temporario
+      # 12. Testar tipo de dado incorreto
+      - name: Test invalid data type
+        run: |
+          python - <<'PY'
+          import json
+          import urllib.error
+          import urllib.request
+
+          url = "http://127.0.0.1:8000/prever"
+
+          cliente_tipo_invalido = {
+              "total_atendimentos": "sete",
+              "atendimentos_abertos": 2,
+              "media_satisfacao": 3.5,
+          }
+
+          dados = json.dumps(cliente_tipo_invalido).encode("utf-8")
+
+          requisicao = urllib.request.Request(
+              url,
+              data=dados,
+              headers={"Content-Type": "application/json"},
+              method="POST",
+          )
+
+          try:
+              with urllib.request.urlopen(requisicao, timeout=10):
+                  raise AssertionError(
+                      "A API aceitou um tipo de dado invalido."
+                  )
+          except urllib.error.HTTPError as erro:
+              assert erro.code == 422, (
+                  f"Esperado HTTP 422, recebido HTTP {erro.code}"
+              )
+              resposta = json.load(erro)
+
+              assert any(
+                  item["type"] == "int_type"
+                  and item["loc"] == ["body", "total_atendimentos"]
+                  for item in resposta["detail"]
+              ), "Erro de tipo nao identificado corretamente."
+
+          print("Teste de tipo invalido aprovado: HTTP 422.")
+          PY
+
+      # 13. Remover container temporario
       - name: Remove Docker test container
         if: always()
         run: docker rm -f churn-api-ci || true
