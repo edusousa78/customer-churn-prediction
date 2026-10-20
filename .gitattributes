@@ -1,0 +1,3 @@
+
+# Padronizar arquivos CSV com finais de linha LF
+*.csv text eol=lf

@@ -14,7 +14,7 @@
     "dataset": {
         "arquivo": "data/processed/customer_churn_sintetico.csv",
         "quantidade_registros": 1000,
-        "sha256": "D1A7F4DF958DAAF35C9CA38CA71CB062525CDD3131BC2F10850E6F41B3BF7F03"
+        "sha256": "4A6B59A97D45D1E5BAD0F8C71D1E6E6BBC60803F544681A93B729AF4DEFAD6DF"
     },
     "modelo": {
         "arquivo": "models/modelo_churn_logistico.joblib",
