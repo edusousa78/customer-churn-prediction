@@ -1,5 +1,4 @@
 
-
 name: Python Tests
 
 on:
@@ -15,27 +14,60 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
+      # 1. Baixar o código do repositório
       - name: Checkout repository
         uses: actions/checkout@v4
 
+      # 2. Configurar Python
       - name: Set up Python
         uses: actions/setup-python@v5
         with:
           python-version: '3.13'
           cache: 'pip'
 
+      # 3. Instalar dependências
       - name: Install dependencies
         run: |
           python -m pip install --upgrade pip
           python -m pip install -r requirements.txt
 
+      # 4. Verificar dependências
       - name: Check dependencies
         run: python -m pip check
 
+      # 5. Analisar qualidade do código
       - name: Run Ruff lint
         run: python -m ruff check api src tests main.py
 
+      # 6. Executar testes automatizados
       - name: Run automated tests
         run: python -m pytest -q
+
+      # 7. Construir imagem Docker
       - name: Build Docker image
         run: docker build -t conecta-brasil-churn-api:ci .
+
+      # 8. Iniciar container e testar a API
+      - name: Smoke test Docker container
+        run: |
+          docker run -d --name churn-api-ci -p 127.0.0.1:8000:8000 conecta-brasil-churn-api:ci
+
+          for tentativa in {1..30}; do
+            if curl --fail --silent --show-error http://127.0.0.1:8000/health; then
+              echo ""
+              echo "Smoke test aprovado: API respondeu HTTP 200."
+              exit 0
+            fi
+
+            echo "Aguardando API iniciar... tentativa $tentativa"
+            sleep 2
+          done
+
+          echo "Smoke test falhou."
+          docker logs churn-api-ci
+          exit 1
+
+      # 9. Remover container temporário
+      - name: Remove Docker test container
+        if: always()
+        run: docker rm -f churn-api-ci || true
