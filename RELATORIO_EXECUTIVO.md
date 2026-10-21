@@ -69,7 +69,11 @@ O limiar de classificação (*threshold*) adotado foi de **0,20**, selecionado a
 O conjunto de teste foi consultado em etapas anteriores do desenvolvimento educacional. Portanto, os resultados não constituem uma avaliação completamente independente de todas as decisões do projeto.
 
 ## 5. Resultados do modelo
+### Comparação das métricas de classificação
 
+![Métricas de classificação do modelo de churn](reports/figures/metricas_classificacao.png)
+
+*Figura: comparação das métricas obtidas no conjunto de teste sintético.*
 | Métrica | Resultado |
 |---|---:|
 | Acurácia | 76,00% |
