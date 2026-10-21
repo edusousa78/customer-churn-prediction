@@ -105,6 +105,25 @@ previstas para os 200 clientes do conjunto de teste sintético.*
 
 ### 
 
+### Curva Precision-Recall e desempenho na identificação de churn
+
+A curva Precision-Recall apresenta a relação entre precisão e
+sensibilidade (recall) conforme o threshold de classificação varia.
+
+O modelo apresentou Average Precision (AP) de 0,3567 no conjunto
+de teste sintético, resultado superior à prevalência de churn
+de 13,00%.
+
+Esse resultado indica capacidade de discriminação da classe
+positiva, embora exista um compromisso entre identificar mais
+cancelamentos e aumentar o número de alertas falsos.
+
+![Curva Precision-Recall do modelo de churn](reports/figures/curva_precision_recall.png)
+
+*Figura: curva Precision-Recall calculada a partir das
+probabilidades previstas para os 200 clientes do conjunto
+de teste sintético.*
+
 Matriz de confusão
 
 
