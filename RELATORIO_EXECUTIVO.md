@@ -1,7 +1,7 @@
 # Relatório Executivo — Customer Churn Prediction
 
 **Projeto:** Conecta Brasil Telecom
-**Versão:** 1.0 — Protótipo educacional
+**Versão:** 1.1 — Protótipo educacional
 **Área:** Ciência de Dados e Machine Learning
 **Problema:** Predição de cancelamento de clientes (Customer Churn)
 
@@ -15,7 +15,7 @@ Foi construído um modelo de classificação utilizando Regressão Logística, c
 
 O projeto utiliza exclusivamente dados sintéticos e possui finalidade educacional.
 
-O modelo apresentou acurácia de 76,00%, recall de 53,85% e precisão de 28,00% no conjunto de teste.
+O modelo apresentou acurácia de **76,00%**, recall de **53,85%** e precisão de **28,00%** no conjunto de teste.
 
 Os resultados demonstram a viabilidade técnica do fluxo de predição, mas não comprovam desempenho ou benefícios financeiros em operações reais.
 
@@ -25,87 +25,88 @@ O cancelamento de clientes representa um desafio para empresas que dependem de r
 
 A identificação antecipada de clientes com risco de cancelamento pode apoiar estratégias como:
 
-* Atendimento preventivo.
-* Priorização da resolução de reclamações.
-* Análise de insatisfação dos clientes.
-* Desenvolvimento de estratégias de retenção.
-* Alocação mais eficiente de recursos comerciais.
+- Atendimento preventivo.
+- Priorização da resolução de reclamações.
+- Análise de insatisfação dos clientes.
+- Desenvolvimento de estratégias de retenção.
+- Alocação mais eficiente de recursos comerciais.
 
 O objetivo do modelo é simular uma ferramenta de apoio à identificação desses clientes.
 
 ## 3. Dados utilizados
 
-O conjunto de dados contém 1.000 clientes sintéticos.
+O conjunto de dados contém **1.000 clientes sintéticos**.
 
-
-| Indicador                 | Quantidade |
-| ------------------------- | ---------- |
-| Total de clientes         | 1.000      |
-| Clientes sem cancelamento | 869        |
-| Clientes com cancelamento | 131        |
-| Taxa de churn             | 13,10%     |
+| Indicador | Quantidade |
+|---|---:|
+| Total de clientes | 1.000 |
+| Clientes sem cancelamento | 869 |
+| Clientes com cancelamento | 131 |
+| Taxa de churn | 13,10% |
 
 ### Variáveis preditoras
 
-* `<span>total_atendimentos</span>`: quantidade total de atendimentos.
-* `<span>atendimentos_abertos</span>`: quantidade de atendimentos não resolvidos.
-* `<span>media_satisfacao</span>`: satisfação média do cliente, entre 1 e 5.
+- `total_atendimentos`: quantidade total de atendimentos.
+- `atendimentos_abertos`: quantidade de atendimentos não resolvidos.
+- `media_satisfacao`: satisfação média do cliente, entre 1 e 5.
 
 Os registros são fictícios e não contêm informações pessoais de clientes reais.
 
 ## 4. Metodologia
 
-O algoritmo utilizado foi a Regressão Logística, implementada com Scikit-learn.
+O algoritmo utilizado foi a **Regressão Logística**, implementada com Scikit-learn.
 
 Os dados foram divididos de maneira estratificada:
 
+| Conjunto | Registros |
+|---|---:|
+| Treinamento | 600 |
+| Validação | 200 |
+| Teste | 200 |
 
-| Conjunto    | Registros |
-| ----------- | --------- |
-| Treinamento | 600       |
-| Validação | 200       |
-| Teste       | 200       |
-
-O limiar de classificação adotado foi de 0,20, selecionado a partir da análise do F1-score no conjunto de validação.
+O limiar de classificação (*threshold*) adotado foi de **0,20**, selecionado a partir da análise do F1-score no conjunto de validação.
 
 O conjunto de teste foi consultado em etapas anteriores do desenvolvimento educacional. Portanto, os resultados não constituem uma avaliação completamente independente de todas as decisões do projeto.
 
 ## 5. Resultados do modelo
 
-
-| Métrica          | Resultado |
-| ----------------- | --------- |
-| Acurácia         | 76,00%    |
-| Precisão         | 28,00%    |
-| Recall            | 53,85%    |
-| F1-score          | 36,84%    |
-| ROC-AUC           | 0,7465    |
-| Average Precision | 0,3567    |
+| Métrica | Resultado |
+|---|---:|
+| Acurácia | 76,00% |
+| Precisão | 28,00% |
+| Recall | 53,85% |
+| F1-score | 36,84% |
+| ROC-AUC | 0,7465 |
+| Average Precision | 0,3567 |
 
 ### Matriz de confusão
 
-
 | Resultado real | Previsto: não cancelou | Previsto: cancelou |
-| -------------- | ----------------------- | ------------------ |
-| Não cancelou  | 138                     | 36                 |
-| Cancelou       | 12                      | 14                 |
+|---|---:|---:|
+| Não cancelou | 138 | 36 |
+| Cancelou | 12 | 14 |
 
-Dos 26 clientes que efetivamente cancelaram no conjunto de teste, 14 foram identificados corretamente.
+### Visualização da matriz de confusão
 
-O modelo também sinalizou 36 clientes que não cancelaram, demonstrando a importância de considerar o custo dos falsos positivos.
+![Matriz de confusão do modelo de churn](reports/figures/matriz_confusao.png)
+
+*Figura: matriz de confusão obtida no conjunto de teste sintético, utilizando threshold de classificação de 0,20.*
+
+Dos 26 clientes que efetivamente cancelaram no conjunto de teste, **14 foram identificados corretamente**.
+
+O modelo também sinalizou **36 clientes que não cancelaram**, demonstrando a importância de considerar o custo dos falsos positivos.
 
 ## 6. Simulação de impacto financeiro
 
-Para ilustrar os possíveis custos operacionais, consideramos uma ação de retenção hipotética de R\$ 100 por cliente sinalizado.
+Para ilustrar os possíveis custos operacionais, consideramos uma ação de retenção hipotética de **R$ 100 por cliente sinalizado**.
 
-
-| Indicador                                         | Valor     |
-| ------------------------------------------------- | --------- |
-| Clientes sinalizados                              | 50        |
-| Custo por ação                                  | R\$ 100   |
-| Custo total das ações                           | R\$ 5.000 |
-| Falsos positivos                                  | 36        |
-| Custo das ações direcionadas a falsos positivos | R\$ 3.600 |
+| Indicador | Valor |
+|---|---:|
+| Clientes sinalizados | 50 |
+| Custo por ação | R$ 100 |
+| Custo total das ações | R$ 5.000 |
+| Falsos positivos | 36 |
+| Custo das ações direcionadas a falsos positivos | R$ 3.600 |
 
 Esses valores são exclusivamente ilustrativos.
 
@@ -115,14 +116,14 @@ O custo de uma ação destinada a um falso positivo não representa necessariame
 
 O projeto apresenta as seguintes limitações:
 
-* Os dados são sintéticos.
-* O modelo não foi validado com clientes reais.
-* A precisão de 28% indica quantidade relevante de falsos positivos.
-* O recall de 53,85% demonstra que parte dos cancelamentos não foi identificada.
-* Não foram realizados estudos completos de viés ou estabilidade temporal.
-* As probabilidades não foram avaliadas quanto à calibração.
-* Não existe comprovação de redução de churn ou retorno financeiro.
-* O conjunto de teste foi consultado durante o processo educacional de desenvolvimento.
+- Os dados são sintéticos.
+- O modelo não foi validado com clientes reais.
+- A precisão de 28% indica quantidade relevante de falsos positivos.
+- O recall de 53,85% demonstra que parte dos cancelamentos não foi identificada.
+- Não foram realizados estudos completos de viés ou estabilidade temporal.
+- As probabilidades não foram avaliadas quanto à calibração.
+- Não existe comprovação de redução de churn ou retorno financeiro.
+- O conjunto de teste foi consultado durante o processo educacional de desenvolvimento.
 
 O modelo não deve ser utilizado para decisões comerciais reais sem validações adicionais.
 
@@ -130,17 +131,17 @@ O modelo não deve ser utilizado para decisões comerciais reais sem validaçõe
 
 O projeto contempla:
 
-* Python e Scikit-learn para Machine Learning.
-* FastAPI para disponibilização das previsões.
-* Docker para conteinerização.
-* Pytest para testes automatizados.
-* Ruff para análise estática.
-* GitHub Actions para integração contínua.
-* Render para hospedagem demonstrativa da API.
+- Python e Scikit-learn para Machine Learning.
+- FastAPI para disponibilização das previsões.
+- Docker para conteinerização.
+- Pytest para testes automatizados.
+- Ruff para análise estática.
+- GitHub Actions para integração contínua.
+- Render para hospedagem demonstrativa da API.
 
-**API pública:** [https://conecta-brasil-churn-api.onrender.com](https://conecta-brasil-churn-api.onrender.com/)
+**API pública:** https://conecta-brasil-churn-api.onrender.com
 
-**Documentação interativa:** [https://conecta-brasil-churn-api.onrender.com/docs](https://conecta-brasil-churn-api.onrender.com/docs)
+**Documentação interativa:** https://conecta-brasil-churn-api.onrender.com/docs
 
 A disponibilidade da instância gratuita pode variar, incluindo períodos de suspensão por inatividade.
 
