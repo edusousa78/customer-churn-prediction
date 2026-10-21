@@ -37,13 +37,12 @@ O objetivo do modelo é simular uma ferramenta de apoio à identificação desse
 
 O conjunto de dados contém **1.000 clientes sintéticos**.
 
-
-| Indicador                 | Quantidade |
-| ------------------------- | ---------: |
-| Total de clientes         |      1.000 |
-| Clientes sem cancelamento |        869 |
-| Clientes com cancelamento |        131 |
-| Taxa de churn             |     13,10% |
+| Indicador | Quantidade |
+|---|---:|
+| Total de clientes | 1.000 |
+| Clientes sem cancelamento | 869 |
+| Clientes com cancelamento | 131 |
+| Taxa de churn | 13,10% |
 
 ### Variáveis preditoras
 
@@ -59,12 +58,11 @@ O algoritmo utilizado foi a **Regressão Logística**, implementada com Scikit-l
 
 Os dados foram divididos de maneira estratificada:
 
-
-| Conjunto    | Registros |
-| ----------- | --------: |
-| Treinamento |       600 |
-| Validação |       200 |
-| Teste       |       200 |
+| Conjunto | Registros |
+|---|---:|
+| Treinamento | 600 |
+| Validação | 200 |
+| Teste | 200 |
 
 O limiar de classificação (*threshold*) adotado foi de **0,20**, selecionado a partir da análise do F1-score no conjunto de validação.
 
@@ -72,65 +70,21 @@ O conjunto de teste foi consultado em etapas anteriores do desenvolvimento educa
 
 ## 5. Resultados do modelo
 
-### Comparação das métricas de classificação
+| Métrica | Resultado |
+|---|---:|
+| Acurácia | 76,00% |
+| Precisão | 28,00% |
+| Recall | 53,85% |
+| F1-score | 36,84% |
+| ROC-AUC | 0,7465 |
+| Average Precision | 0,3567 |
 
-![Métricas de classificação do modelo de churn](reports/figures/metricas_classificacao.png)
-
-*Figura: comparação das métricas obtidas no conjunto de teste sintético.*
-
-
-| Métrica          | Resultado |
-| ----------------- | --------: |
-| Acurácia         |    76,00% |
-| Precisão         |    28,00% |
-| Recall            |    53,85% |
-| F1-score          |    36,84% |
-| ROC-AUC           |    0,7465 |
-| Average Precision |    0,3567 |
-
-### Curva ROC e capacidade de discriminação
-
-A curva ROC apresenta a relação entre a taxa de verdadeiros
-positivos (TPR) e a taxa de falsos positivos (FPR) conforme
-o limiar de classificação é alterado.
-
-O modelo de Regressão Logística apresentou ROC-AUC de
-0,7465 no conjunto de teste sintético, indicando capacidade
-de discriminação superior à referência aleatória (0,50).
-
-![Curva ROC do modelo de churn](reports/figures/curva_roc.png)
-
-*Figura: curva ROC calculada a partir das probabilidades
-previstas para os 200 clientes do conjunto de teste sintético.*
-
-### 
-
-### Curva Precision-Recall e desempenho na identificação de churn
-
-A curva Precision-Recall apresenta a relação entre precisão e
-sensibilidade (recall) conforme o threshold de classificação varia.
-
-O modelo apresentou Average Precision (AP) de 0,3567 no conjunto
-de teste sintético, resultado superior à prevalência de churn
-de 13,00%.
-
-Esse resultado indica capacidade de discriminação da classe
-positiva, embora exista um compromisso entre identificar mais
-cancelamentos e aumentar o número de alertas falsos.
-
-![Curva Precision-Recall do modelo de churn](reports/figures/curva_precision_recall.png)
-
-*Figura: curva Precision-Recall calculada a partir das
-probabilidades previstas para os 200 clientes do conjunto
-de teste sintético.*
-
-Matriz de confusão
-
+### Matriz de confusão
 
 | Resultado real | Previsto: não cancelou | Previsto: cancelou |
-| -------------- | ----------------------: | -----------------: |
-| Não cancelou  |                     138 |                 36 |
-| Cancelou       |                      12 |                 14 |
+|---|---:|---:|
+| Não cancelou | 138 | 36 |
+| Cancelou | 12 | 14 |
 
 ### Visualização da matriz de confusão
 
@@ -142,17 +96,60 @@ Dos 26 clientes que efetivamente cancelaram no conjunto de teste, **14 foram ide
 
 O modelo também sinalizou **36 clientes que não cancelaram**, demonstrando a importância de considerar o custo dos falsos positivos.
 
+### Visualização das métricas de classificação
+
+![Métricas de classificação do modelo de churn](reports/figures/metricas_classificacao.png)
+
+*Figura: acurácia, precisão, recall e F1-score calculados no conjunto de teste sintético, com threshold de 0,20.*
+
+### Curva ROC e capacidade de discriminação
+
+A curva ROC mostra a relação entre a taxa de verdadeiros positivos e a taxa de falsos positivos conforme o threshold varia. O modelo apresentou **ROC-AUC de 0,7465** no conjunto de teste sintético.
+
+![Curva ROC do modelo de churn](reports/figures/curva_roc.png)
+
+*Figura: curva ROC calculada a partir das probabilidades previstas para os 200 clientes do conjunto de teste sintético.*
+
+### Curva Precision-Recall e desempenho na identificação de churn
+
+A curva Precision-Recall apresenta a relação entre precisão e sensibilidade (*recall*) conforme o threshold de classificação varia.
+
+O modelo apresentou **Average Precision (AP) de 0,3567** no conjunto de teste sintético, resultado superior à prevalência de churn de **13,00%**.
+
+Esse resultado indica capacidade de discriminação da classe positiva, embora exista um compromisso entre identificar mais cancelamentos e aumentar o número de alertas falsos.
+
+![Curva Precision-Recall do modelo de churn](reports/figures/curva_precision_recall.png)
+
+*Figura: curva Precision-Recall calculada a partir das probabilidades previstas para os 200 clientes do conjunto de teste sintético.*
+
+### Interpretabilidade do modelo — Coeficientes
+
+A Regressão Logística permite analisar como cada variável está associada às chances estimadas de churn, mantendo as demais variáveis constantes.
+
+| Variável | Coeficiente | Odds ratio aproximado | Interpretação |
+|---|---:|---:|---|
+| `atendimentos_abertos` | +0,8501 | 2,3399 | Associação positiva com as chances de churn |
+| `total_atendimentos` | +0,1883 | 1,2072 | Associação positiva com as chances de churn |
+| `media_satisfacao` | -0,6482 | 0,5230 | Associação negativa com as chances de churn |
+
+Os *odds ratios* representam o fator multiplicativo nas *odds* estimadas por unidade adicional da variável. Não são variações diretas em pontos percentuais de probabilidade.
+
+A interpretação deve considerar as unidades e escalas das variáveis. Os coeficientes expressam associações no modelo e **não demonstram causalidade**.
+
+![Coeficientes do modelo de churn](reports/figures/coeficientes_modelo.png)
+
+*Figura: coeficientes extraídos do artefato salvo da Regressão Logística, treinada com dados sintéticos.*
+
 ## 6. Simulação de impacto financeiro
 
 Para ilustrar os possíveis custos operacionais, consideramos uma ação de retenção hipotética de **R$ 100 por cliente sinalizado**.
 
-
-| Indicador                                         |    Valor |
-| ------------------------------------------------- | -------: |
-| Clientes sinalizados                              |       50 |
-| Custo por ação                                  |   R$ 100 |
-| Custo total das ações                           | R$ 5.000 |
-| Falsos positivos                                  |       36 |
+| Indicador | Valor |
+|---|---:|
+| Clientes sinalizados | 50 |
+| Custo por ação | R$ 100 |
+| Custo total das ações | R$ 5.000 |
+| Falsos positivos | 36 |
 | Custo das ações direcionadas a falsos positivos | R$ 3.600 |
 
 Esses valores são exclusivamente ilustrativos.
